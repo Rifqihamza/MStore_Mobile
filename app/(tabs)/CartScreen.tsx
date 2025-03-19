@@ -1,220 +1,362 @@
-import React, { useState } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, Image, TouchableOpacity, FlatList } from 'react-native';
+import React, { useReducer } from 'react';
+import {
+    View, Text, SafeAreaView, StyleSheet, Image, TouchableOpacity, FlatList,
+    Platform,
+    Dimensions
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import Feather from '@expo/vector-icons/Feather';
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { productList as initialProductList } from '@/dummyDataProduct/productList';
 
-// Define the Product type
+
 interface Product {
     id: number;
     nameProduct: string;
     priceProduct: number;
     stockProduct: number;
-    uri: any; // Adjust the type if necessary (e.g., ImageSourcePropType)
+    uri: any;
     quantity?: number;
 }
 
+type CartState = {
+    products: Product[];
+    selectedItems: number[];
+};
+
+type CartAction =
+    | { type: 'INCREASE'; id: number }
+    | { type: 'DECREASE'; id: number }
+    | { type: 'DELETE'; id: number }
+    | { type: 'TOGGLE_SELECT'; id: number }
+    | { type: 'TOGGLE_SELECT_ALL' }
+    | { type: 'DELETE_SELECTED' };
+
+const cartReducer = (state: CartState, action: CartAction): CartState => {
+    switch (action.type) {
+        case 'INCREASE':
+            return {
+                ...state,
+                products: state.products.map(item =>
+                    item.id === action.id ? { ...item, quantity: (item.quantity || 1) + 1 } : item
+                ),
+            };
+        case 'DECREASE':
+            return {
+                ...state,
+                products: state.products.map(item =>
+                    item.id === action.id ? { ...item, quantity: Math.max((item.quantity || 1) - 1, 1) } : item
+                ),
+            };
+        case 'DELETE':
+            return { ...state, products: state.products.filter(item => item.id !== action.id) };
+        case 'TOGGLE_SELECT':
+            return {
+                ...state,
+                selectedItems: state.selectedItems.includes(action.id)
+                    ? state.selectedItems.filter(id => id !== action.id)
+                    : [...state.selectedItems, action.id],
+            };
+        case 'TOGGLE_SELECT_ALL':
+            return {
+                ...state,
+                selectedItems: state.selectedItems.length === state.products.length ? [] : state.products.map(p => p.id),
+            };
+        case 'DELETE_SELECTED':
+            return {
+                ...state,
+                products: state.products.filter(item => !state.selectedItems.includes(item.id)),
+                selectedItems: []
+            };
+        default:
+            return state;
+    }
+};
+
 const CartScreen: React.FC = () => {
-    const [products, setProducts] = useState<Product[]>(initialProductList);
+    const [state, dispatch] = useReducer(cartReducer, { products: initialProductList, selectedItems: [] });
     const router = useRouter();
+    const totalPrice = state.products.reduce((total, item) => total + (item.priceProduct * (item.quantity || 1)), 0);
+    const allSelected = state.selectedItems.length === state.products.length && state.products.length > 0;
 
-    // Increase Quantity
-    const increaseQuantity = (id: number): void => {
-        setProducts(prev => prev.map(item =>
-            item.id === id ? { ...item, quantity: (item.quantity || 1) + 1 } : item
-        ));
-    };
-
-    // Decrease Quantity
-    const decreaseQuantity = (id: number): void => {
-        setProducts(prev => prev.map(item =>
-            item.id === id ? { ...item, quantity: Math.max((item.quantity || 1) - 1, 1) } : item
-        ));
-    };
-
-    // Delete Product
-    const deleteProduct = (id: number): void => {
-        setProducts(prev => prev.filter(item => item.id !== id));
-    };
-
-    // Calculate total price
-    const totalPrice = products.reduce((total, item) => total + (item.priceProduct * (item.quantity || 1)), 0);
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            {/* Header */}
-            <View style={styles.containerHeader}>
-                <Text style={styles.title}>Keranjang Belanja</Text>
-                <View style={styles.compIcon}>
-                    <AntDesign name="hearto" size={24} color="white" />
-                    <AntDesign name="setting" size={24} color="white" />
-                </View>
-            </View>
+            <View style={styles.container}>
+                <View style={styles.containerList}>
+                    <Text style={styles.headerTitle}>Keranjang Belanja</Text>
+                    {/* Select All Section */}
+                    <View style={styles.selectAllContainer}>
+                        <TouchableOpacity style={styles.checkbox} onPress={() => dispatch({ type: 'TOGGLE_SELECT_ALL' })}>
+                            <Feather name={allSelected ? "check-square" : "square"} size={24} color={allSelected ? "#3c93cb" : "#ccc"} />
+                            <Text style={styles.selectAllText}>Pilih Semua ({state.selectedItems.length})</Text>
+                        </TouchableOpacity>
 
-            {/* Cart List */}
-            <FlatList
-                data={products}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                    <View style={styles.cartItem}>
-                        <View style={styles.productInfo}>
-                            <Image source={item.uri} style={styles.productImage} />
-                            <View style={styles.productTitle}>
-                                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.productName}>{item.nameProduct}</Text>
-                                <Text style={styles.productPrice}>Rp {item.priceProduct}</Text>
-                                <Text style={styles.productPrice}>Stok {item.stockProduct}</Text>
-                            </View>
+                        {state.selectedItems.length > 0 && (
+                            <TouchableOpacity
+                                onPress={() => dispatch({ type: 'DELETE_SELECTED' })}
+                            >
+                                <Text style={styles.deleteText}>Hapus</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
+
+                    {state.products.length === 0 ? (
+                        <View style={styles.emptyCartContainer}>
+                            <Text style={styles.emptyCartText}>Keranjang belanja kosong</Text>
                         </View>
-                        <View style={styles.containerAction}>
-                            <View style={styles.quantityContainer}>
-                                <TouchableOpacity style={styles.delButton} onPress={() => deleteProduct(item.id)}>
-                                    <Feather name="trash-2" size={24} color="black" />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => decreaseQuantity(item.id)} style={styles.button}>
-                                    <Text style={styles.buttonText}>-</Text>
-                                </TouchableOpacity>
-                                <Text style={styles.quantity}>{item.quantity || 1}</Text>
-                                <TouchableOpacity onPress={() => increaseQuantity(item.id)} style={styles.button}>
-                                    <Text style={styles.buttonText}>+</Text>
-                                </TouchableOpacity>
+                    ) : (
+                        <FlatList
+                            data={state.products}
+                            keyExtractor={(item) => item.id.toString()}
+                            renderItem={({ item }) => (
+                                <CartItem
+                                    item={item}
+                                    isSelected={state.selectedItems.includes(item.id)}
+                                    onIncrease={() => dispatch({ type: 'INCREASE', id: item.id })}
+                                    onDecrease={() => dispatch({ type: 'DECREASE', id: item.id })}
+                                    onDelete={() => dispatch({ type: 'DELETE', id: item.id })}
+                                    onToggleSelect={() => dispatch({ type: 'TOGGLE_SELECT', id: item.id })}
+                                />
+                            )}
+                            contentContainerStyle={styles.cartContainer}
+                            showsVerticalScrollIndicator={false}
+                        />
+                    )}
+                </View>
+
+                {state.products.length > 0 && (
+                    <View style={styles.footer}>
+                        <View style={styles.footerContainer}>
+                            <Text style={styles.summaryTitle}>Ringkasan Belanja</Text>
+                            <View style={styles.totalContainer}>
+                                <Text style={styles.totalText}>Total:</Text>
+                                <Text style={styles.totalPrice}>Rp {totalPrice.toLocaleString()}</Text>
                             </View>
+                            <TouchableOpacity style={styles.buyButton} onPress={() => router.push('/payment/PaymentScreen')}>
+                                <Text style={styles.buyButtonText}>Buy Now!</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 )}
-                contentContainerStyle={styles.cartContainer}
-            />
-
-            {/* Footer */}
-            <View style={styles.footer}>
-                <View>
-                    <Text style={styles.totalText}>Total: Rp {totalPrice.toLocaleString()}</Text>
-                </View>
-                <TouchableOpacity style={styles.buyButton} onPress={() => router.push('/payment/PaymentScreen')}>
-                    <Text style={styles.checkoutText}>Buy Now!</Text>
-                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );
 };
 
+const CartItem = ({ item, isSelected, onIncrease, onDecrease, onDelete, onToggleSelect }: {
+    item: Product;
+    isSelected: boolean;
+    onIncrease: () => void;
+    onDecrease: () => void;
+    onDelete: () => void;
+    onToggleSelect: () => void;
+}) => (
+    <View style={styles.cartItem}>
+        <TouchableOpacity style={styles.checkboxContainer} onPress={onToggleSelect}>
+            <Feather name={isSelected ? "check-square" : "square"} size={24} color={isSelected ? "#fff" : "#ccc"} />
+        </TouchableOpacity>
+
+        <View style={styles.productInfo}>
+            <Image source={item.uri} style={styles.productImage} />
+            <View style={styles.productDetails}>
+                <Text numberOfLines={1} style={styles.productName}>{item.nameProduct}</Text>
+                <Text style={styles.productPrice}>Rp {item.priceProduct}</Text>
+                <Text style={styles.productStock}>Stok {item.stockProduct}</Text>
+            </View>
+        </View>
+
+        <View style={styles.actionContainer}>
+            <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
+                <Feather name="trash-2" size={14} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onDecrease} style={styles.button}>
+                <Text style={styles.buttonText}>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.quantity}>{item.quantity || 1}</Text>
+            <TouchableOpacity onPress={onIncrease} style={styles.button}>
+                <Text style={styles.buttonText}>+</Text>
+            </TouchableOpacity>
+        </View>
+    </View>
+);
+
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#1F4287'
+        backgroundColor: "#fefefe"
     },
-    containerHeader: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        paddingHorizontal: 20,
-        paddingVertical: 20,
+    container: {
+        padding: Platform.select({
+            ios: 20,
+            android: 30,
+            default: 15
+        }),
+        justifyContent: "center",
+        alignContent: "center",
+        gap: 15,
+        width: "100%",
+        marginHorizontal: "auto"
     },
-    title: {
-        color: "white",
+    containerList: {
+        height: Dimensions.get("window").height * 0.5,
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: { width: 2, height: 4 },
+        shadowRadius: 5,
+        shadowOpacity: 0.5,
+        padding: 20,
+    },
+    headerTitle: {
         fontSize: 24,
-        fontWeight: "600"
-    },
-    compIcon: {
-        flexDirection: "row",
-        gap: 20
+        fontWeight: "600",
+        textTransform: 'uppercase',
+        paddingBottom: 10
     },
     cartContainer: {
-        paddingHorizontal: 20,
-
+        overflow: 'scroll'
+    },
+    emptyCartContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    emptyCartText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#888'
     },
     cartItem: {
-        backgroundColor: "#ffffff",
-        padding: 10,
+        backgroundColor: "#3c93cb",
+        padding: 20,
         marginVertical: 10,
         borderRadius: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
     },
-    productImage: {
-        width: 100,
-        height: 100,
+    checkboxContainer: {
+        marginRight: 5,
+    },
+    selectAllContainer: {
+        flex: 0,
+        flexDirection: 'row',
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: 10,
+    },
+    checkbox: {
+        marginRight: 10,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+    },
+    selectAllText: {
+        fontSize: 16,
+        fontWeight: 'bold'
+    },
+    deleteText: {
+        color: '#3c93cb',
+        fontWeight: 'bold'
     },
     productInfo: {
         flex: 1,
         flexDirection: 'row',
-        justifyContent: 'flex-start',
-        width: 500,
+        alignItems: 'center'
     },
-    productTitle: {
-        flexShrink: 1, // Menghindari teks keluar dari container
-        maxWidth: "60%", // Menyesuaikan agar tidak lebih dari 80% parent
+    productImage: {
+        width: 50,
+        height: 50
+    },
+    productDetails: {
+        flexShrink: 1,
+        maxWidth: "60%"
     },
     productName: {
-        color: "#000",
-        fontSize: 20,
-        fontWeight: "bold",
+        color: "#fff",
+        fontSize: 18,
+        fontWeight: "bold"
     },
     productPrice: {
-        color: "#010101",
-        fontSize: 14,
+        color: "#fafafa",
+        fontSize: 16
+    },
+    productStock: {
+        color: "#fafafa",
+        fontSize: 14
+    },
+    actionContainer: {
+        position: "absolute",
+        bottom: 10,
+        right: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10
     },
     button: {
-        backgroundColor: "#444",
+        backgroundColor: "#fff",
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 5
     },
     buttonText: {
-        color: "white",
-        fontSize: 20
+        color: "black",
+        fontSize: 14
     },
     quantity: {
-        color: "black",
-        fontSize: 20,
+        color: "white",
+        fontSize: 16,
         fontWeight: "bold"
     },
-    quantityContainer: {
-        flexDirection: "row",
-        justifyContent: 'flex-end',
-        alignItems: "center",
-        gap: 10
+    deleteButton: {
+        borderWidth: 1,
+        padding: 5,
+        borderRadius: 6,
+        borderColor: 'white'
     },
-    containerAction: {
-        flexDirection: 'column',
+    footer: {
+        padding: 10,
+        backgroundColor: "#fff",
+        borderRadius: 20,
         gap: 20,
-        position: 'absolute',
-        bottom: 10,
-        right: 10
+        shadowColor: "#000",
+        shadowOffset: { width: 4, height: 4 },
+        shadowRadius: 5,
+        shadowOpacity: 0.5,
+        elevation: 5,
+    },
+    footerContainer: {
+        padding: 20,
+        backgroundColor: "#fff",
+        borderRadius: 20,
+        gap: 20
+    },
+    summaryTitle: {
+        fontSize: 22,
+        fontWeight: '600'
+    },
+    totalContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
+    totalText: {
+        fontSize: 18
+    },
+    totalPrice: {
+        fontSize: 20,
+        fontWeight: '600'
     },
     buyButton: {
         backgroundColor: '#3c93cb',
-        paddingHorizontal: 10,
-        paddingVertical: 6,
+        padding: 15,
         borderRadius: 10,
         alignItems: 'center'
-
     },
-    delButton: {
-        borderWidth: 1,
-        padding: 4,
-        borderRadius: 6,
-        borderColor: 'black'
-    },
-    footer: {
-        position: 'relative',
-        backgroundColor: '#ffffff',
-        height: 40,
-        width: '100%',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 20
-    },
-    totalText: {
-        color: '#000',
+    buyButtonText: {
         fontSize: 20,
-        fontWeight: 'bold'
+        color: "#fff",
+        fontWeight: '600'
     },
-    checkoutText: {
-        color: '#ffffff',
-        fontSize: 18,
-        fontWeight: 'bold',
-        textAlign: 'center'
-    }
 });
 
 export default CartScreen;

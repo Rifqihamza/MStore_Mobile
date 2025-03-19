@@ -16,7 +16,7 @@ export default function SearchBar({ changeInputFocus }: SearchBarProps) {
                 <TextInput
                     style={styles.inputText}
                     placeholder={"Mau Cari Apa?"}
-                    placeholderTextColor={'#fff'}
+                    placeholderTextColor={'#aeaeae'}
                     autoCorrect={false}
                     onFocus={() => changeInputFocus(true)}
                     onBlur={() => changeInputFocus(false)}
@@ -33,21 +33,28 @@ const styles = StyleSheet.create({
         padding: 20
     },
     searchInput: {
-        backgroundColor: '#1F4287',
+        backgroundColor: '#fff',
         borderRadius: 15,
         height: 50,
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 10,
+        paddingHorizontal: 20,
+
+        elevation: 5,
+
+        shadowColor: "#000",
+        shadowRadius: 5,
+        shadowOffset: {width: 1, height: 1},
+        shadowOpacity: 0.5,
     },
     searchIcon: {
         marginRight: 10,
         fontSize: 22,
-        color: '#fff',
+        color: '#aeaeae',
     },
     inputText: {
         flex: 1,
         fontSize: 18,
-        color: '#fff',
+        color: '#000',
     },
 });

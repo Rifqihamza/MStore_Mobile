@@ -42,9 +42,9 @@ const AccountScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       {/* Profile */}
       <View style={styles.containerProfile}>
-        <Image source={require('@/assets/images/react-logo.png')} style={styles.backgroundImage} />
+        <Image source={require('@/assets/images/mitraLogo.png')} style={styles.backgroundImage} />
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
-          <Image source={require('@/assets/images/react-logo.png')} style={styles.profilePict} />
+          <Image source={require('@/assets/images/mitraLogo.png')} style={styles.profilePict} />
           <View>
             <Text style={styles.profileName}>Muhammad Rifqi Hamza</Text>
             <View style={{ flexDirection: 'column', gap: 2 }}>
@@ -84,10 +84,10 @@ const AccountScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#1F4287',
+    backgroundColor: '#3c93cb',
   },
   containerProfile: {
-    height: 200,
+    height: 250,
     padding: 20,
     position: 'relative',
     justifyContent: 'center'
@@ -117,7 +117,8 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     padding: 10,
-    backgroundColor: '#1F4287',},
+    backgroundColor: '#3c93cb',
+  },
   sectionHeaderText: {
     color: 'white',
     fontSize: 18,

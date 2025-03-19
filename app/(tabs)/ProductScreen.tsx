@@ -80,6 +80,7 @@ const ProductScreen: React.FC = () => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
+        padding: 20,
         backgroundColor: '#ffffff',
     },
     container: {
@@ -95,11 +96,11 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: '#fefefe',
-        shadowColor: '#000',
-        shadowOffset: { width: 4, height: 4 }, // Increased offset for a deeper shadow
-        shadowOpacity: 0.9, // Increased opacity for a more visible shadow
-        shadowRadius: 5, // Increased radius for a softer spread
-        elevation: 6, // For Android shadow support
+        shadowColor: '#aeaeae',
+        shadowOffset: { width: 4, height: 3 }, // Increased offset for a deeper shadow
+        shadowOpacity: 0.4, // Increased opacity for a more visible shadow
+        shadowRadius: 2, // Increased radius for a softer spread
+        elevation: 10, // For Android shadow support
         borderRadius: 10,
         padding: 10,
         height: 250,

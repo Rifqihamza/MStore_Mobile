@@ -18,13 +18,13 @@ export default function Greeting() {
 
     return (
         <View>
-            <Text style={styles.greeting}>{getGreeting()}</Text>
+            <Text style={styles.greeting}>{getGreeting()}!</Text>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     greeting: {
-        color: 'white', fontSize: 16
+        color: '#fff', fontSize: 16
     },
 });

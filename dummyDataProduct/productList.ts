@@ -2,7 +2,7 @@ import { ImageSourcePropType } from 'react-native';
 
 interface Product {
     id: number;
-    uri: ImageSourcePropType;  // ✅ Dapat menampung require() atau URL gambar
+    uri: ImageSourcePropType; 
     nameProduct: string;
     priceProduct: number;
     stockProduct: number;
