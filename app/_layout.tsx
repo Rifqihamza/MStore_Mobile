@@ -3,7 +3,7 @@ import { StatusBar } from 'react-native';
 export default function Layout() {
   return (
     <>
-      <StatusBar barStyle={'dark-content'} hidden={false} />
+      <StatusBar barStyle={'default'} hidden={false} />
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="payment/PaymentScreen" options={{ headerShown: false }} />

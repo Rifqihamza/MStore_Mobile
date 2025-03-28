@@ -98,18 +98,10 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     containerForm: {
-        backgroundColor: "#fff",
         borderRadius: 20,
         height: "auto",
         width: "100%",
         padding: 30,
-
-        elevation: 5,
-
-        shadowColor: "#000",
-        shadowOpacity: 0.5,
-        shadowOffset: { width: 3, height: 3 },
-        shadowRadius: 5,
     },
     headerTitle: {
         flexDirection: "row",
@@ -127,6 +119,7 @@ const styles = StyleSheet.create({
     },
     titleChild: {
         fontSize: 16,
+
     },
     inputContainer: {
         position: "relative",
@@ -175,17 +168,24 @@ const styles = StyleSheet.create({
     },
 
     button: {
-        backgroundColor: "#007bff",
+        backgroundColor: "#3c93cb",
         paddingVertical: 15,
         borderRadius: 15,
         alignItems: "center",
+
+        shadowColor: "#000",
+        shadowOpacity: 0.5,
+        shadowOffset: { width: 3, height: 1, },
+        shadowRadius: 3,
+
+        elevation: 3,
     },
     buttonText: {
         color: "#fff",
         fontSize: 20,
         fontWeight: "bold",
-    },
 
+    },
     googleButton: {
         backgroundColor: "#fff",
 
@@ -193,11 +193,11 @@ const styles = StyleSheet.create({
         borderRadius: 15,
 
         shadowColor: "#000",
-        shadowOffset: { width: 3, height: 3 },
+        shadowOffset: { width: 3, height: 2 },
         shadowOpacity: 0.5,
-        shadowRadius: 5,
+        shadowRadius: 3,
 
-        elevation: 5,
+        elevation: 3,
 
         flexDirection: "row",
         alignItems: "center",

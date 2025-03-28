@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Image, Dimensions, Animated, FlatList, TouchableHighlight, Platform, useWindowDimensions } from "react-native";
+import { View, Text, StyleSheet, Image, Dimensions, Animated, TouchableHighlight, ScrollView, Platform, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
@@ -17,11 +17,9 @@ const adsData = [
     require("../../assets/images/ads-images/ads-fifth.jpg"),
 ];
 
-import { Route } from "expo-router";
+type RouteType = "/ProductScreen" | "/CartScreen" | "/transaction/TransactionHistory";
 
-type MenuItem = { key: string; icon: JSX.Element; route: Route };
-
-const menuItems: MenuItem[] = [
+const menuItems: { key: string; icon: JSX.Element; route: RouteType }[] = [
     { key: "Seragam", icon: <FontAwesome5 name="tshirt" size={30} color={"white"} />, route: "/ProductScreen" },
     { key: "Aksesoris", icon: <AntDesign name="book" size={30} color={"white"} />, route: "/ProductScreen" },
     { key: "Keranjang", icon: <AntDesign name="shoppingcart" size={30} color={"white"} />, route: "/CartScreen" },
@@ -41,32 +39,31 @@ export default function HomeScreen() {
         return () => clearInterval(interval);
     }, []);
 
-    const { width, height, scale } = Dimensions.get('window');
+    const { width } = Dimensions.get("window");
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={styles.headerContainer}>
-                <View className="container" style={styles.header}>
-                    <View style={styles.profileSection}>
-                        <Image source={require("../../assets/images/avatar.jpg")} style={styles.profileImage} />
-                        <View>
-                            <Greeting />
-                            <Text style={styles.userName}>Muhammad Rifqi Hamza</Text>
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
+                <View style={styles.headerContainer}>
+                    <View className="container" style={styles.header}>
+                        <View style={styles.profileSection}>
+                            <Image source={require("../../assets/images/avatar.jpg")} style={styles.profileImage} />
+                            <View>
+                                <Greeting />
+                                <Text style={styles.userName}>Muhammad Rifqi Hamza</Text>
+                            </View>
+                        </View>
+                        <View style={styles.iconSection}>
+                            <TouchableOpacity
+                                onPress={() => router.navigate('/loginPage/LoginPageScreen')}
+                                style={styles.signUpBtn}>
+                                <Text style={{ color: "#fff", fontSize: 16, fontWeight: "600", textTransform: "uppercase", }}>Sign Up</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
-                    {/* Login Button */}
-                    <View style={styles.iconSection}>
-                        <TouchableHighlight
-                            onPress={() => router.navigate('/loginPage/LoginPageScreen')}
-                            underlayColor={"#fff"}
-                            style={styles.signUpBtn}>
-                            <Text style={{ color: "#fff" }}>Sign Up</Text>
-                        </TouchableHighlight>
-                    </View>
                 </View>
-            </View>
-            <View style={styles.containerAll}>
-                <View style={styles.container}>
+
+                <View style={styles.containerAll}>
                     {/* Carousel */}
                     <View style={styles.carouselContainer}>
                         <Animated.View style={[styles.slideWrapper, { transform: [{ translateX: slideAnim }] }]}>
@@ -81,28 +78,19 @@ export default function HomeScreen() {
 
                     {/* Menu */}
                     <View style={styles.menuContainer}>
-                        <FlatList
-                            data={menuItems}
-                            renderItem={({ item }) => (
-                                <TouchableHighlight
-                                    style={styles.menuItem}
-                                    onPress={() => router.push(item.route)}
-                                    underlayColor="#000"
-                                >
+                        {menuItems.map((item, index) => (
+                            <View key={index} style={styles.menuGrid}>
+                                <TouchableHighlight onPress={() => router.push(item.route)} style={styles.menuItem} underlayColor={"#2f7fbf"}>
                                     <View style={styles.itemContent}>
                                         {item.icon}
                                         <Text style={styles.itemTitle}>{item.key}</Text>
                                     </View>
                                 </TouchableHighlight>
-                            )}
-                            keyExtractor={item => item.key}
-                            numColumns={2}
-                            columnWrapperStyle={styles.menuGrid}
-                        />
+                            </View>
+                        ))}
                     </View>
-
                 </View>
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 }
@@ -113,10 +101,10 @@ const styles = StyleSheet.create({
         backgroundColor: "#fefefe"
     },
     containerAll: {
-        width: Dimensions.get("window").width > 768 ? "80%" : "100%", // Jika lebar layar > 768px (tablet/desktop), gunakan 60%, jika tidak gunakan 100%
-        alignSelf: "center", // Agar tetap berada di tengah pada layar besar
-        paddingHorizontal: Dimensions.get("window").width > 768 ? 40 : 20, // Padding lebih besar di desktop
-        marginTop: Dimensions.get("window").width > 768 ? 30 : 20, // Margin atas lebih besar di desktop
+        width: "100%",
+        alignSelf: "center",
+        paddingHorizontal: 20,
+        marginTop: 20,
     },
     headerContainer: {
         paddingHorizontal: 20,
@@ -128,22 +116,13 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingVertical: Platform.select({
-            ios: 15,
-            android: 15,
-            default: 10,
-        }),
-        paddingHorizontal: Platform.select({
-            ios: 15,
-            android: 20,
-            default: 20,
-        }),
-        shadowColor: "#000",
-        shadowOpacity: 0.4,
-        shadowRadius: 5,
-        shadowOffset: { width: 2, height: 2 },
-
-        elevation: 5,
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+        shadowColor: "#aeaeae",
+        shadowOpacity: 0.5,
+        shadowRadius: 3,
+        shadowOffset: { width: 3, height: 2 },
+        elevation: 3,
     },
     profileSection: {
         flexDirection: "row",
@@ -158,26 +137,15 @@ const styles = StyleSheet.create({
     userName: {
         fontSize: 18,
         fontWeight: "600",
-        color: "#ffffff"
+        color: "#ffffff",
     },
     iconSection: {
         flexDirection: "row",
-        gap: Platform.select({
-            ios: 10,
-            android: 15,
-            default: 15,
-        }),
+        gap: 15,
     },
     signUpBtn: {
-        borderWidth: 2,
-        borderColor: "#fff",
         paddingHorizontal: 15,
         paddingVertical: 10,
-        borderRadius: 10,
-    },
-    container: {
-        width: "100%",
-        marginHorizontal: "auto",
     },
     carouselContainer: {
         alignItems: "center",
@@ -205,28 +173,32 @@ const styles = StyleSheet.create({
         marginHorizontal: 4
     },
     menuContainer: {
-        marginHorizontal: "auto",
         width: "100%",
-        height: "100%",
+        marginTop: 20,
+        flexDirection: "row",
+        flexWrap: "wrap",
+        justifyContent: "space-between",
+        padding: 10,
     },
     menuGrid: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
+        width: Platform.select({
+            ios: "45%",
+            android: "45%",
+            default: "45%"
+        }),
+        marginBottom: 10,
     },
     menuItem: {
         alignItems: "center",
+        justifyContent: "center",
         padding: 20,
         backgroundColor: "#3c93cb",
         borderRadius: 15,
-        flex: 1,
-        margin: 5,
-
-        shadowColor: "#000",
-        shadowOpacity: 0.4,
-        shadowRadius: 5,
-        shadowOffset: { width: 2, height: 2 },
-
-        elevation: 5,
+        shadowColor: "#aeaeae",
+        shadowOpacity: 2,
+        shadowRadius: 3,
+        shadowOffset: { width: 2, height: 1 },
+        elevation: 3,
     },
     itemContent: {
         alignItems: "center",

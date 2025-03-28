@@ -165,6 +165,11 @@ const styles = StyleSheet.create({
         flex: 1,
         borderRadius: 30,
         backgroundColor: "white",
+
+        shadowColor: "#000",
+        shadowOpacity: 0.2,
+        shadowOffset: { width: 1, height: -2 },
+        shadowRadius: 5,
     },
     iconContainer: {
         position: "absolute",

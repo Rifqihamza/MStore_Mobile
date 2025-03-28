@@ -61,7 +61,7 @@ const AccountScreen = () => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.itemContainer}>
-            <FontAwesome5 name={item.icon} size={18} color="white" />
+            <FontAwesome5 name={item.icon} size={18} color="black" />
             <Text style={styles.itemText}>{item.name}</Text>
           </TouchableOpacity>
         )}
@@ -84,22 +84,21 @@ const AccountScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#3c93cb',
+    backgroundColor: '#fff',
   },
   containerProfile: {
     height: 250,
     padding: 20,
     position: 'relative',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    backgroundColor: "rgb(0, 0, 0)",
   },
   backgroundImage: {
     width: '100%',
-    height: '100%',
     position: 'absolute',
     right: '-50%',
-    top: 20,
     opacity: 0.2,
-
+    resizeMode: "contain",
   },
   profilePict: {
     width: 50,
@@ -107,20 +106,19 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   profileName: {
-    color: 'white',
+    color: '#fff',
     fontSize: 20,
     fontWeight: 'bold',
   },
   profileDetail: {
-    color: 'white',
+    color: '#fff',
     fontSize: 16,
   },
   sectionHeader: {
     padding: 10,
-    backgroundColor: '#3c93cb',
+    backgroundColor: '#fff',
   },
   sectionHeaderText: {
-    color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -129,9 +127,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     padding: 15,
+    backgroundColor: "#fff"
   },
   itemText: {
-    color: 'white',
+    color: '#000',
     fontSize: 16,
   },
   logoutButton: {
@@ -143,10 +142,10 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: 'white'
+    borderColor: '#000'
   },
   logoutText: {
-    color: 'white',
+    color: '#000',
     fontSize: 16,
     fontWeight: 'bold',
   },

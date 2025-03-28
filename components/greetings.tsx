@@ -25,6 +25,7 @@ export default function Greeting() {
 
 const styles = StyleSheet.create({
     greeting: {
-        color: '#fff', fontSize: 16
+        color: '#fff',
+        fontSize: 16,
     },
 });

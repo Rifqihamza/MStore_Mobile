@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, Modal, Platform
+  View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, Platform
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -13,8 +13,8 @@ const WalletScreen = () => {
 
   const saldo = [{ id: 1, saldoTotal: 1500000 }];
   const saldoHistory = [
-    { id: "1", date: "2025-03-08", amount: 50000, description: "Top-up saldo" },
-    { id: "2", date: "2025-03-08", amount: -20000, description: "Beli Wearpack Elektronika Industri" },
+    { id: "1", date: "2025-03-20", amount: 50000, description: "Top-up saldo" },
+    { id: "2", date: "2025-03-20", amount: -20000, description: "Beli Wearpack Elektronika Industri" },
   ];
 
   const formattedDate = (date: Date): string => date.toISOString().split('T')[0];
@@ -28,7 +28,9 @@ const WalletScreen = () => {
           {saldo.map((sisaSaldo) => (
             <View key={sisaSaldo.id} style={styles.saldoContainer}>
               <Ionicons name="wallet-outline" size={36} color="#3c93cb" />
-              <Text style={styles.textSaldo}>{isVisible ? `Rp ${sisaSaldo.saldoTotal.toLocaleString("id-ID")}` : "Rp ******"}</Text>
+              <Text style={styles.textSaldo}>
+                {isVisible ? `Rp ${sisaSaldo.saldoTotal.toLocaleString("id-ID")}` : "Rp ******"}
+              </Text>
               <TouchableOpacity onPress={() => setIsVisible(!isVisible)}>
                 <Ionicons name={isVisible ? "eye-outline" : "eye-off-outline"} size={30} color="#000" />
               </TouchableOpacity>
@@ -51,36 +53,19 @@ const WalletScreen = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Android Date Picker (Inline) */}
-          {showPicker && Platform.OS === 'android' && (
+          {/* Date Picker untuk iOS & Android */}
+          {showPicker && (
             <DateTimePicker
               value={selectedDate}
               mode="date"
-              display="default"
+              display={Platform.OS === 'ios' ? "inline" : "default"}
               onChange={(event, date) => {
+                if (date) {
+                  setSelectedDate(date);
+                }
                 setShowPicker(false);
-                if (date) setSelectedDate(date);
               }}
             />
-          )}
-
-          {/* iOS Date Picker (Modal) */}
-          {Platform.OS === 'ios' && (
-            <Modal visible={showPicker} transparent animationType="slide">
-              <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
-                  <DateTimePicker
-                    value={selectedDate}
-                    mode="date"
-                    display="spinner"
-                    onChange={(event, date) => date && setSelectedDate(date)}
-                  />
-                  <TouchableOpacity style={styles.modalButton} onPress={() => setShowPicker(false)}>
-                    <Text style={styles.modalButtonText}>Pilih</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </Modal>
           )}
 
           <FlatList
@@ -91,7 +76,9 @@ const WalletScreen = () => {
                 <Text style={styles.historyDescription}>{item.description}</Text>
                 <View style={styles.historyDetails}>
                   <Text style={styles.historyDate}>{item.date}</Text>
-                  <Text style={[styles.historyAmount, { color: item.amount < 0 ? 'red' : 'green' }]}>Rp {item.amount.toLocaleString("id-ID")}</Text>
+                  <Text style={[styles.historyAmount, { color: item.amount < 0 ? 'red' : 'green' }]}>
+                    Rp {item.amount.toLocaleString("id-ID")}
+                  </Text>
                 </View>
               </View>
             )}
@@ -115,9 +102,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     padding: 20,
     borderRadius: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowColor: "#aeaeae",
+    shadowOffset: { width: 3, height: 2 },
+    shadowOpacity: 2,
     shadowRadius: 4,
     elevation: 3,
   },
@@ -144,7 +131,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 20,
     borderRadius: 15,
-    shadowColor: "#000",
+    shadowColor: "#aeaeae",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -191,32 +178,6 @@ const styles = StyleSheet.create({
     color: "#3c93db",
     fontWeight: "600",
   },
-  /* Modal Styles */
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)"
-  },
-  modalContent: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    width: "80%"
-  },
-  modalButton: {
-    marginTop: 10,
-    backgroundColor: "#3c93cb",
-    padding: 10,
-    borderRadius: 5
-  },
-  modalButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16
-  },
-
   noDataText: {
     fontSize: 16,
     color: "gray",
