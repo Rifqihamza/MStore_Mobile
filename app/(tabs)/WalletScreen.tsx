@@ -1,24 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, Platform
+  View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, Modal, Platform
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-const WalletScreen = () => {
-  const [isVisible, setIsVisible] = useState(true);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showPicker, setShowPicker] = useState(false);
+interface Saldo {
+  id: number;
+  saldoTotal: number;
+}
 
-  const saldo = [{ id: 1, saldoTotal: 1500000 }];
-  const saldoHistory = [
+interface HistoryItem {
+  id: string;
+  date: string;
+  amount: number;
+  description: string;
+}
+
+const WalletScreen: React.FC = () => {
+  const [isVisible, setIsVisible] = useState<boolean>(true);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [showPicker, setShowPicker] = useState<boolean>(false);
+
+  useEffect(() => {
+    console.log("Modal state changed:", showPicker);
+  }, [showPicker]);
+
+  const saldo: Saldo[] = [{ id: 1, saldoTotal: 1500000 }];
+  const saldoHistory: HistoryItem[] = [
     { id: "1", date: "2025-03-20", amount: 50000, description: "Top-up saldo" },
     { id: "2", date: "2025-03-20", amount: -20000, description: "Beli Wearpack Elektronika Industri" },
   ];
 
   const formattedDate = (date: Date): string => date.toISOString().split('T')[0];
   const filteredHistory = saldoHistory.filter(item => item.date === formattedDate(selectedDate));
+
+  const handleDateChange = (event: DateTimePickerEvent, date?: Date) => {
+    if (date) {
+      setSelectedDate(date);
+      console.log("Date selected:", formattedDate(date));
+    }
+    if (Platform.OS === "android") {
+      setShowPicker(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -43,30 +69,58 @@ const WalletScreen = () => {
         <View style={styles.historyContainer}>
           <View style={styles.historyHeader}>
             <Text style={styles.historyTitle}>Riwayat Saldo</Text>
+
+            {/* Date Picker Input */}
             <TouchableOpacity onPress={() => setShowPicker(true)}>
               <TextInput
                 style={styles.dateInput}
-                value={formattedDate(selectedDate)}
+                value={selectedDate.toISOString().split("T")[0]}
                 editable={false}
-                placeholder="Pilih tanggal"
               />
             </TouchableOpacity>
           </View>
 
-          {/* Date Picker untuk iOS & Android */}
-          {showPicker && (
+          {/* Android Date Picker */}
+          {showPicker && Platform.OS === "android" && (
             <DateTimePicker
               value={selectedDate}
               mode="date"
-              display={Platform.OS === 'ios' ? "inline" : "default"}
+              display="default"
               onChange={(event, date) => {
-                if (date) {
-                  setSelectedDate(date);
-                }
                 setShowPicker(false);
+                handleDateChange(event, date);
               }}
             />
           )}
+
+          {/* iOS Date Picker in Modal */}
+          {Platform.OS === "ios" && showPicker && (
+            <Modal
+              transparent
+              animationType="slide"
+              visible={showPicker}
+              onRequestClose={() => setShowPicker(false)}
+            >
+              <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                  <DateTimePicker
+                    value={selectedDate}
+                    mode="date"
+                    display="spinner"
+                    onChange={handleDateChange}
+                  />
+                  {/* Tombol untuk menutup modal */}
+                  <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={() => setShowPicker(false)}
+                  >
+                    <Text style={styles.closeButtonText}>Pilih</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+          )}
+
 
           <FlatList
             data={filteredHistory}
@@ -182,6 +236,29 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "gray",
     textAlign: "center",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  closeButton: {
+    marginTop: 10,
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#3c93cb",
+  },
+  closeButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
