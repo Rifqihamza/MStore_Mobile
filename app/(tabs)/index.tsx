@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, Image, Dimensions, Animated, TouchableHighlight, ScrollView, Platform, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import Constants from 'expo-constants';
 
 // Icon
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -98,7 +99,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: "#fefefe"
+        backgroundColor: "#fefefe",
     },
     containerAll: {
         width: "100%",
