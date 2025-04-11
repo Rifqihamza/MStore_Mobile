@@ -147,7 +147,7 @@ const WalletScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#fff",
   },
   containerSaldo: {
     padding: 20,
@@ -158,9 +158,9 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     shadowColor: "#aeaeae",
     shadowOffset: { width: 3, height: 2 },
-    shadowOpacity: 2,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 3,
+    shadowRadius: 5,
+    elevation: 5,
   },
   title: {
     fontSize: 22,

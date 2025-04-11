@@ -1,12 +1,26 @@
-import React from 'react';
-import { View, Text, SafeAreaView, StyleSheet, Image, SectionList, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  Image,
+  SectionList,
+  TouchableOpacity,
+  TouchableHighlight,
+  Alert,
+} from 'react-native';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import { accountData } from '@/dummyDataProduct/accountData';
 
 const AccountScreen = () => {
+  const [isPressed, setIsPressed] = useState(false);
+  const user = accountData[0]; // Ambil data pengguna pertama
+
   const handleLogout = () => {
-    Alert.alert("Logout", "Apakah Anda yakin ingin keluar?", [
-      { text: "Batal", style: "cancel" },
-      { text: "Logout", onPress: () => console.log("User logged out") }
+    Alert.alert('Logout', 'Apakah Anda yakin ingin keluar?', [
+      { text: 'Batal', style: 'cancel' },
+      { text: 'Logout', onPress: () => console.log('User logged out') },
     ]);
   };
 
@@ -42,14 +56,14 @@ const AccountScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       {/* Profile */}
       <View style={styles.containerProfile}>
-        <Image source={require('@/assets/images/mitraLogo.png')} style={styles.backgroundImage} />
+        <Image source={user.backgroundImage} style={styles.backgroundImage} />
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
-          <Image source={require('@/assets/images/mitraLogo.png')} style={styles.profilePict} />
+          <Image source={user.profilePicture} style={styles.profilePict} />
           <View>
-            <Text style={styles.profileName}>Muhammad Rifqi Hamza</Text>
+            <Text style={styles.profileName}>{user.name}</Text>
             <View style={{ flexDirection: 'column', gap: 2 }}>
-              <Text style={styles.profileDetail}>+62 812 345 678</Text>
-              <Text style={styles.profileDetail}>example@gmail.com</Text>
+              <Text style={styles.profileDetail}>{user.phone}</Text>
+              <Text style={styles.profileDetail}>{user.email}</Text>
             </View>
           </View>
         </View>
@@ -73,10 +87,24 @@ const AccountScreen = () => {
       />
 
       {/* Logout Button */}
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <FontAwesome5 name="sign-out-alt" size={18} color="white" />
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
+      <TouchableHighlight
+        onPress={handleLogout}
+        onShowUnderlay={() => setIsPressed(true)}
+        onHideUnderlay={() => setIsPressed(false)}
+        underlayColor="transparent"
+        style={isPressed ? styles.logoutButtonPressed : styles.logoutButton}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <FontAwesome5
+            name="sign-out-alt"
+            size={18}
+            color={isPressed ? '#000' : '#3c93cb'}
+          />
+          <Text style={[styles.logoutText, isPressed && { color: '#000' }]}>
+            Logout
+          </Text>
+        </View>
+      </TouchableHighlight>
     </SafeAreaView>
   );
 };
@@ -91,14 +119,14 @@ const styles = StyleSheet.create({
     padding: 20,
     position: 'relative',
     justifyContent: 'center',
-    backgroundColor: "rgb(0, 0, 0)",
+    backgroundColor: 'rgb(0, 0, 0)',
   },
   backgroundImage: {
     width: '100%',
     position: 'absolute',
     right: '-50%',
     opacity: 0.2,
-    resizeMode: "contain",
+    resizeMode: 'contain',
   },
   profilePict: {
     width: 50,
@@ -127,7 +155,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     padding: 15,
-    backgroundColor: "#fff"
+    backgroundColor: '#fff',
   },
   itemText: {
     color: '#000',
@@ -142,10 +170,21 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: '#000'
+    borderColor: '#3c93cb',
+  },
+  logoutButtonPressed: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    padding: 15,
+    margin: 20,
+    borderRadius: 15,
+    justifyContent: 'center',
+    borderColor: '#000',
+    borderWidth: 2,
   },
   logoutText: {
-    color: '#000',
+    color: '#3c93cb',
     fontSize: 16,
     fontWeight: 'bold',
   },
