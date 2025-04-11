@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router'; // Use Expo Router
 import SearchBar from '@/components/searchBar';
-import { productList } from '@/dummyDataProduct/productList';
+import { productList } from '@/dummyData/productList';
 
 interface Product {
     id: number;

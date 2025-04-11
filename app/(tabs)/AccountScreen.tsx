@@ -11,7 +11,8 @@ import {
   Alert,
 } from 'react-native';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import { accountData } from '@/dummyDataProduct/accountData';
+import { accountData } from '@/dummyData/accountData';
+import { router } from 'expo-router';
 
 const AccountScreen = () => {
   const [isPressed, setIsPressed] = useState(false);
@@ -52,6 +53,55 @@ const AccountScreen = () => {
     },
   ];
 
+
+  interface SectionItem {
+    id: number;
+    name: string;
+    icon: string;
+  }
+
+  interface Section {
+    title: string;
+    data: SectionItem[];
+  }
+
+  const handleBtnSetting = (item: SectionItem): void => {
+    switch (item.id) {
+      case 1:
+        router.push('/accountSetting/editProfile/editProfiles');
+        break;
+      case 2:
+        console.log('Change Password clicked');
+        break;
+      case 3:
+        console.log('Manage Payment Method clicked');
+        break;
+      case 4:
+        console.log('Notifications clicked');
+        break;
+      case 5:
+        console.log('Security Settings clicked');
+        break;
+      case 6:
+        console.log('Transaction History clicked');
+        break;
+      case 7:
+        console.log('Login History clicked');
+        break;
+      case 8:
+        console.log('Help or Support Center clicked');
+        break;
+      case 9:
+        console.log('Privacy Policy & Terms of Use clicked');
+        break;
+      case 10:
+        console.log('About App clicked');
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Profile */}
@@ -74,7 +124,7 @@ const AccountScreen = () => {
         sections={sections}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.itemContainer}>
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleBtnSetting(item)}>
             <FontAwesome5 name={item.icon} size={18} color="black" />
             <Text style={styles.itemText}>{item.name}</Text>
           </TouchableOpacity>
@@ -119,7 +169,9 @@ const styles = StyleSheet.create({
     padding: 20,
     position: 'relative',
     justifyContent: 'center',
-    backgroundColor: 'rgb(0, 0, 0)',
+    backgroundColor: 'rgb(60, 147, 203)',
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
   backgroundImage: {
     width: '100%',

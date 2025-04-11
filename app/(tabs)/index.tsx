@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, Image, Dimensions, Animated, TouchableHighlight, ScrollView, Platform, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import Constants from 'expo-constants';
 
 // Icon
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Greeting from "@/components/greetings";
+import { accountData } from "@/dummyData/accountData";
 
 const adsData = [
     require("../../assets/images/ads-images/ads-first.jpg"),
@@ -32,6 +32,8 @@ export default function HomeScreen() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const slideAnim = useRef(new Animated.Value(0)).current;
 
+    const user = accountData[0]; // Ambil data pengguna pertama
+
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentIndex(prevIndex => (prevIndex + 1) % adsData.length);
@@ -48,10 +50,10 @@ export default function HomeScreen() {
                 <View style={styles.headerContainer}>
                     <View className="container" style={styles.header}>
                         <View style={styles.profileSection}>
-                            <Image source={require("../../assets/images/avatar.jpg")} style={styles.profileImage} />
+                            <Image source={user.profilePicture} style={styles.profileImage} />
                             <View>
                                 <Greeting />
-                                <Text style={styles.userName}>Muhammad Rifqi Hamza</Text>
+                                <Text style={styles.userName}>{user.name}</Text>
                             </View>
                         </View>
                         <View style={styles.iconSection}>

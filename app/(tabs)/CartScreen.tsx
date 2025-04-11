@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import Feather from '@expo/vector-icons/Feather';
-import { productList as initialProductList } from '@/dummyDataProduct/productList';
+import { productList as initialProductList } from '@/dummyData/productList';
 
 
 interface Product {
