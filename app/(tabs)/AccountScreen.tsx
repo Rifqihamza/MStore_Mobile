@@ -68,34 +68,34 @@ const AccountScreen = () => {
   const handleBtnSetting = (item: SectionItem): void => {
     switch (item.id) {
       case 1:
-        router.push('/accountSetting/editProfile/editProfiles');
+        router.push('/accountSetting/editProfile/editProfilesPage');
         break;
       case 2:
-        console.log('Change Password clicked');
+        router.push('/accountSetting/changePassword/changePasswordPage');
         break;
       case 3:
-        console.log('Manage Payment Method clicked');
+        router.push('/accountSetting/editProfile/editProfilesPage');
         break;
       case 4:
-        console.log('Notifications clicked');
+        router.push('/accountSetting/editProfile/editProfilesPage');
         break;
       case 5:
-        console.log('Security Settings clicked');
+        router.push('/accountSetting/editProfile/editProfilesPage');
         break;
       case 6:
-        console.log('Transaction History clicked');
+        router.push('/accountSetting/editProfile/editProfilesPage');
         break;
       case 7:
-        console.log('Login History clicked');
+        router.push('/accountSetting/editProfile/editProfilesPage');
         break;
       case 8:
-        console.log('Help or Support Center clicked');
+        router.push('/accountSetting/editProfile/editProfilesPage');
         break;
       case 9:
-        console.log('Privacy Policy & Terms of Use clicked');
+        router.push('/accountSetting/editProfile/editProfilesPage');
         break;
       case 10:
-        console.log('About App clicked');
+        router.push('/accountSetting/editProfile/editProfilesPage');
         break;
       default:
         break;
